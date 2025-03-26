@@ -37,5 +37,17 @@ class TestStringCalculator(unittest.TestCase):
             StringCalculator.add("abc")
         self.assertEqual(str(context.exception), "Invalid inputs: Charaters are not allowed")
 
+    def test_new_line_delimiters(self):
+        # Test with new lines between numbers
+        self.assertEqual(StringCalculator.add("1\n2,3"), 6)
+        self.assertEqual(StringCalculator.add("10\n20\n30"), 60)
+        self.assertEqual(StringCalculator.add("\n9,1"), 10)
+        self.assertEqual(StringCalculator.add("1,\n3"), 4)
+
+    def test_invalid_inputs_with_new_lines(self):
+        # Test invalid input with alphabets and new lines
+        with self.assertRaises(InvalidInputException):
+            StringCalculator.add("1\n2,a")
+
 if __name__ == '__main__':
     unittest.main()
