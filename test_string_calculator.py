@@ -48,6 +48,25 @@ class TestStringCalculator(unittest.TestCase):
         # Test invalid input with alphabets and new lines
         with self.assertRaises(InvalidInputException):
             StringCalculator.add("1\n2,a")
+    
+    def test_single_character_delimiter(self):
+        # Test with a single-character custom delimiter
+        self.assertEqual(StringCalculator.add("//;\n1;2"), 3)  # Delimiter is ";"
+        self.assertEqual(StringCalculator.add("//|\n10|20|30"), 60)  # Delimiter is "|"
+        self.assertEqual(StringCalculator.add("//#\n4#5#6"), 15)  # Delimiter is "#"
+
+    def test_single_character_delimiter_with_new_lines(self):
+        # Test with a single-character custom delimiter and new lines
+        self.assertEqual(StringCalculator.add("//;\n1\n2;3"), 6)  # Mixed ";" and "\n"
+        self.assertEqual(StringCalculator.add("//|\n10|20\n30"), 60)  # Mixed "|" and "\n"
+
+    def test_invalid_inputs_with_single_character_delimiter(self):
+        # Test invalid inputs with a single-character custom delimiter
+        with self.assertRaises(InvalidInputException):
+            StringCalculator.add("//;\n1;a;3")  # Contains alphabetic character "a"
+        with self.assertRaises(InvalidInputException):
+            StringCalculator.add("//|\n10|20|abc")  # Contains alphabetic characters "abc"
+
 
 if __name__ == '__main__':
     unittest.main()
