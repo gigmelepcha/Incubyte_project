@@ -67,6 +67,26 @@ class TestStringCalculator(unittest.TestCase):
         with self.assertRaises(InvalidInputException):
             StringCalculator.add("//|\n10|20|abc")  # Contains alphabetic characters "abc"
 
+    def test_negative_numbers(self):
+        # Test with a single negative number
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,-2,3")
+        self.assertEqual(str(context.exception), "Negative numbers not allowed: -2")
+
+        # Test with multiple negative numbers
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,-2,-3")
+        self.assertEqual(str(context.exception), "Negative numbers not allowed: -2, -3")
+
+        # Test with custom delimiter and negative numbers
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("//;\n1;-2;3")
+        self.assertEqual(str(context.exception), "Negative numbers not allowed: -2")
+
+        # Test with custom delimiter "-" and negative numbers
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("//-\n1--2")
+        self.assertEqual(str(context.exception), "Negative numbers not allowed: -2")
 
 if __name__ == '__main__':
     unittest.main()
