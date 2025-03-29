@@ -25,17 +25,24 @@ class TestStringCalculator(unittest.TestCase):
         # Test input with alphabets
         with self.assertRaises(InvalidInputException) as context:
             StringCalculator.add("1,a,3")
-        self.assertEqual(str(context.exception), "Invalid inputs: Charaters are not allowed")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
 
         # Test input with mixed alphabets and numbers
         with self.assertRaises(InvalidInputException) as context:
             StringCalculator.add("1asd")
-        self.assertEqual(str(context.exception), "Invalid inputs: Charaters are not allowed")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
 
         # Test input with only alphabets
         with self.assertRaises(InvalidInputException) as context:
             StringCalculator.add("abc")
-        self.assertEqual(str(context.exception), "Invalid inputs: Charaters are not allowed")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
+        # Test input with special characters
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,[],3")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,+,3")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
 
     def test_new_line_delimiters(self):
         # Test with new lines between numbers
@@ -88,5 +95,25 @@ class TestStringCalculator(unittest.TestCase):
             StringCalculator.add("//-\n1--2")
         self.assertEqual(str(context.exception), "Negative numbers not allowed: -2")
 
+        # Test with alphabetic characters
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,[],3")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
+
+        # Test with special characters
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,@,3")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
+
+        # Test with mixed invalid characters
+        with self.assertRaises(InvalidInputException) as context:
+            StringCalculator.add("1,2a,3")
+        self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
+
+        # Test with empty strings caused by consecutive delimiters
+        
+        # Test with valid input (should not raise an exception)
+        result = StringCalculator.add("1,2,3")
+        self.assertEqual(result, 6)
 if __name__ == '__main__':
     unittest.main()

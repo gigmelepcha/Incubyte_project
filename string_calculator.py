@@ -5,6 +5,19 @@ class InvalidInputException(Exception):
 class StringCalculator:
     @staticmethod
     def add(numbers):
+         """
+        Adds numbers provided in a string format, supporting custom delimiters and validations.
+
+        Parameters:
+        - numbers (str): A string containing numbers separated by delimiters.
+
+        Returns:
+        - int: The sum of the numbers in the string.
+
+        Raises:
+        - InvalidInputException: If the input contains invalid characters, non-numeric values, or negative numbers.
+
+        """
         if numbers is None:  # None input
             return 0
         if numbers == "":  # Empty string
@@ -39,11 +52,8 @@ class StringCalculator:
         negatives = [num for num in num_list if num.strip().startswith("-") and num.strip()[1:].isdigit()]
         if negatives:
             raise InvalidInputException(f"Negative numbers not allowed: {', '.join(negatives)}")
-
-        # Check for alphabetic characters after splitting
-        if any(any(char.isalpha() for char in num) for num in num_list):
-            raise InvalidInputException("Invalid inputs: Charaters are not allowed")
-
-        # Filter out empty strings and convert valid numbers to integers
+        # Check for invalid characters (alphabetic or non-numeric)
+        if any(any(not char.isdigit() for char in num.strip()) for num in num_list):
+            raise InvalidInputException("Invalid inputs: Characters or non-numeric values are not allowed")    # Filter out empty strings and convert valid numbers to integers
         valid_numbers = [int(num) for num in num_list if num.strip().isdigit()]
         return sum(valid_numbers)
