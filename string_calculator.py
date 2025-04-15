@@ -2,10 +2,69 @@ class InvalidInputException(Exception):
     """Custom exception for invalid inputs."""
     pass
 
+
 class StringCalculator:
     @staticmethod
+    def _parse_numbers(numbers, default_delimiter=","):
+        """
+        Parses the input string into a list of numbers based on the delimiter.
+
+        Parameters:
+        - numbers (str): The input string containing numbers.
+        - default_delimiter (str): The default delimiter to use for splitting.
+
+        Returns:
+        - list: A list of parsed numbers as strings.
+        """
+        if not numbers:  # Handle None or empty string
+            return []
+
+        delimiter = default_delimiter
+
+        # Handle custom delimiter
+        if numbers.startswith("//"):
+            delimiter_section = numbers[2:numbers.index("\n")]
+            numbers = numbers[numbers.index("\n") + 1:]  # Remove the custom delimiter line
+            delimiter = delimiter_section
+
+        # Replace newlines with the delimiter
+        numbers = numbers.replace("\n", delimiter)
+        # Split numbers manually to handle edge cases
+        num_list = []
+        current_number = ""
+        for i, char in enumerate(numbers):
+            if char == delimiter and (i == 0 or numbers[i - 1] != "-"):  # Not part of a negative number
+                num_list.append(current_number)
+                current_number = ""
+            else:
+                current_number += char
+        if current_number:  # Add the last number
+            num_list.append(current_number)
+        return num_list
+
+    @staticmethod
+    def _validate_numbers(num_list):
+        """
+        Validates the parsed numbers for negatives and invalid characters.
+
+        Parameters:
+        - num_list (list): A list of parsed numbers as strings.
+
+        Raises:
+        - InvalidInputException: If negative numbers or invalid characters are found.
+        """
+        # Check for negative numbers
+        negatives = [num for num in num_list if num.strip().startswith("-") and num.strip()[1:].isdigit()]
+        if negatives:
+            raise InvalidInputException(f"Negative numbers not allowed: {', '.join(negatives)}")
+
+        # Check for invalid characters (alphabetic or non-numeric)
+        if any(any(not char.isdigit() for char in num.strip()) for num in num_list): 
+            raise InvalidInputException("Invalid inputs: Characters or non-numeric values are not allowed")
+
+    @staticmethod
     def add(numbers):
-         """
+        """
         Adds numbers provided in a string format, supporting custom delimiters and validations.
 
         Parameters:
@@ -13,47 +72,12 @@ class StringCalculator:
 
         Returns:
         - int: The sum of the numbers in the string.
-
-        Raises:
-        - InvalidInputException: If the input contains invalid characters, non-numeric values, or negative numbers.
-
         """
-        if numbers is None:  # None input
+        num_list = StringCalculator._parse_numbers(numbers)
+        if not num_list:  # Handle empty input
             return 0
-        if numbers == "":  # Empty string
-            return 0
 
-        # Handle custom delimiter
-        delimiter = ","
-        raw_delimiter = delimiter  # Default raw delimiter is ","
-        if numbers.startswith("//"):
-            # Extract custom delimiter
-            delimiter_section = numbers[2:numbers.index("\n")]
-            numbers = numbers[numbers.index("\n") + 1:]  # Remove the custom delimiter line
-            raw_delimiter = delimiter_section  # Use raw delimiter for replacement
+        StringCalculator._validate_numbers(num_list)
 
-        # Replace new lines with the raw delimiter
-        numbers = numbers.replace("\n", raw_delimiter)
-
-        # Manually split the string while preserving negative numbers
-        num_list = []
-        current_number = ""
-        for i, char in enumerate(numbers):
-            # Check if the character is the delimiter and not part of a negative number
-            if char == raw_delimiter and (i == 0 or numbers[i - 1] != "-"):
-                num_list.append(current_number)
-                current_number = ""
-            else:
-                current_number += char
-        if current_number:  # Add the last number
-            num_list.append(current_number)
-
-        # Check for negative numbers
-        negatives = [num for num in num_list if num.strip().startswith("-") and num.strip()[1:].isdigit()]
-        if negatives:
-            raise InvalidInputException(f"Negative numbers not allowed: {', '.join(negatives)}")
-        # Check for invalid characters (alphabetic or non-numeric)
-        if any(any(not char.isdigit() for char in num.strip()) for num in num_list):
-            raise InvalidInputException("Invalid inputs: Characters or non-numeric values are not allowed")    # Filter out empty strings and convert valid numbers to integers
-        valid_numbers = [int(num) for num in num_list if num.strip().isdigit()]
-        return sum(valid_numbers)
+        # Calculate the sum
+        return sum(int(num) for num in num_list if num.strip().isdigit())
