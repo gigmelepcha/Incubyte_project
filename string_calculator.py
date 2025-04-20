@@ -63,6 +63,35 @@ class StringCalculator:
             raise InvalidInputException("Invalid inputs: Characters or non-numeric values are not allowed")
 
     @staticmethod
+    def checkOccurance(num_list):
+        """
+        Checks the occurrence of each number in the input string. If a number occurs
+        three or more times, returns its cube once; otherwise, returns the number as it is.
+
+        Parameters:
+        - numbers (str): A string containing numbers separated by delimiters.
+
+        Returns:
+        - list: A list of numbers or their cubes based on the occurrence count.
+        """
+        if not num_list:
+            return []
+        occurrence_count = {}
+
+        for num in num_list:
+            occurrence_count[num] = occurrence_count.get(num, 0) + 1
+
+        result = []
+        processed = set()
+        for num in num_list:
+            if occurrence_count[num] >= 3 and num not in processed:
+                result.append(str(int(num) ** 3))
+                processed.add(num)
+            elif occurrence_count[num] < 3 and num not in processed:
+                result.append(num)
+        return result
+
+    @staticmethod
     def add(numbers):
         """
         Adds numbers provided in a string format, supporting custom delimiters and validations.
@@ -74,10 +103,9 @@ class StringCalculator:
         - int: The sum of the numbers in the string.
         """
         num_list = StringCalculator._parse_numbers(numbers)
-        if not num_list:  # Handle empty input
+        if not num_list:
             return 0
 
         StringCalculator._validate_numbers(num_list)
-
-        # Calculate the sum
+        num_list = StringCalculator.checkOccurance(num_list)
         return sum(int(num) for num in num_list if num.strip().isdigit())

@@ -5,6 +5,7 @@ from string_calculator import InvalidInputException
 class TestStringCalculator(unittest.TestCase):
     def test_empty_string(self):
         self.assertEqual(StringCalculator.add(''), 0)
+        
 
     def test_single_number(self):
         self.assertEqual(StringCalculator.add('1'), 1)
@@ -110,11 +111,22 @@ class TestStringCalculator(unittest.TestCase):
             StringCalculator.add("1,2a,3")
         self.assertEqual(str(context.exception), "Invalid inputs: Characters or non-numeric values are not allowed")
 
-        # Test with empty strings caused by consecutive delimiters
-        
         # Test with valid input (should not raise an exception)
         result = StringCalculator.add("1,2,3")
         self.assertEqual(result, 6)
 
+    def test_validate_cube_in_add(self):
+        # If a String has more than 3 occurence then a qube of the number is expected
+        self.assertEqual(StringCalculator.add("1,2,3,2,2"), 12)  # 1 + 8 + 3
+    
+    def test_validate_cube(self):
+        self.assertEqual(StringCalculator.checkOccurance(["1","2","3","2","2"]),["1","8","3"])
+        #self.assertEqual(StringCalculator.checkOccurance("1,2,3,2,2"),["1","8","3"])
+     # Test with occurrences greater than or equal to 3
+        self.assertEqual(StringCalculator.checkOccurance(["1","2","3","2","2","4","2","4","8","4"]), ["1", "8", "3", "64","8"])
+        
+        # Test with no occurrences greater than or equal to 3
+        self.assertEqual(StringCalculator.checkOccurance(["1","2","3"]), ["1", "2", "3"])
+        
 if __name__ == '__main__':
     unittest.main()
